@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rajveer Grade 1 Math Quest</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:#EEF2FF;min-height:100vh;}
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+:root{
+  --sky:#3B82F6;--sky2:#1D4ED8;--mint:#10B981;--sun:#F59E0B;
+  --rose:#EF4444;--violet:#8B5CF6;--orange:#F97316;
+  --ink:#1E293B;--muted:#64748B;--border:#E2E8F0;--gold:#F59E0B;
+}
+
+.bg{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:linear-gradient(135deg,#EEF2FF 0%,#F0FDF4 50%,#FFF7ED 100%);}
+.bubble{position:absolute;border-radius:50%;opacity:.07;animation:rise 12s ease-in-out infinite;}
+@keyframes rise{0%,100%{transform:translateY(0)}50%{transform:translateY(-25px)}}
+
+#app{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:14px;}
+
+/* TOPBAR */
+.topbar{background:linear-gradient(135deg,#1D4ED8,#3B82F6,#7C3AED);border-radius:18px;
+  padding:13px 18px;display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 6px 24px rgba(29,78,216,.3);margin-bottom:14px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:42px;height:42px;background:rgba(255,255,255,.18);border-radius:11px;
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+.brand h1{color:#fff;font-size:1.2rem;font-weight:900;letter-spacing:-.01em;}
+.brand p{color:rgba(255,255,255,.75);font-size:.75rem;font-weight:600;}
+.topbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.stat-pill{background:rgba(255,255,255,.18);border-radius:9px;padding:5px 11px;
+  color:#fff;font-weight:800;font-size:.82rem;display:flex;align-items:center;gap:4px;}
+.snd-btn{background:rgba(255,255,255,.2);border:none;border-radius:8px;
+  padding:5px 10px;color:#fff;font-weight:700;font-size:.78rem;cursor:pointer;}
+
+/* SCREENS */
+.screen{display:none;}.screen.active{display:block;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* HOME */
+.hero{border-radius:18px;padding:22px;margin-bottom:13px;
+  background:linear-gradient(135deg,#1D4ED8,#7C3AED,#EC4899);
+  color:#fff;overflow:hidden;position:relative;
+  box-shadow:0 8px 28px rgba(124,58,237,.3);}
+.hero::after{content:'';position:absolute;top:-50px;right:-50px;
+  width:180px;height:180px;background:rgba(255,255,255,.06);border-radius:50%;}
+.hero-rocket{font-size:3.2rem;display:inline-block;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-10px) rotate(6deg)}}
+.hero h2{font-size:1.7rem;font-weight:900;margin:6px 0 3px;letter-spacing:-.02em;}
+.hero p{opacity:.85;font-weight:600;font-size:.9rem;}
+
+.today-card{background:#fff;border-radius:14px;padding:16px;
+  border-left:6px solid var(--sky);margin-bottom:12px;
+  box-shadow:0 3px 12px rgba(0,0,0,.07);}
+.today-card h3{color:var(--ink);font-size:1.05rem;font-weight:800;margin-bottom:4px;}
+.topic-tag{display:inline-block;background:#EEF2FF;color:var(--sky2);
+  border-radius:7px;padding:3px 10px;font-weight:800;font-size:.82rem;margin-bottom:9px;}
+
+.prog-box{background:#fff;border-radius:14px;padding:15px;margin-bottom:12px;
+  box-shadow:0 3px 12px rgba(0,0,0,.06);}
+.prog-box h3{color:var(--ink);font-size:.98rem;font-weight:800;margin-bottom:8px;}
+.prog-bar-bg{background:#EEF2FF;border-radius:6px;height:13px;overflow:hidden;}
+.prog-bar-fill{height:100%;border-radius:6px;
+  background:linear-gradient(90deg,var(--mint),var(--sky));transition:width .6s ease;}
+.prog-stats{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;}
+.pstat .num{font-size:1.5rem;color:var(--sky);font-weight:900;}
+.pstat .lbl{font-size:.68rem;color:var(--muted);font-weight:700;text-transform:uppercase;}
+
+.day-picker{background:#fff;border-radius:14px;padding:15px;
+  box-shadow:0 3px 12px rgba(0,0,0,.06);}
+.day-picker h3{color:var(--ink);font-size:.98rem;font-weight:800;margin-bottom:8px;}
+.unit-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+.unit-tab{padding:4px 11px;border:2px solid var(--border);border-radius:12px;
+  cursor:pointer;font-weight:700;font-size:.75rem;color:var(--muted);
+  background:#F8FAFC;transition:all.2s;}
+.unit-tab.active{background:var(--sky);color:#fff;border-color:var(--sky);}
+.day-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;}
+.day-btn{aspect-ratio:1;border:none;border-radius:8px;cursor:pointer;
+  font-weight:800;font-size:.75rem;transition:all.2s;position:relative;}
+.day-btn.locked{background:#F1F5F9;color:#CBD5E1;cursor:not-allowed;}
+.day-btn.avail{background:linear-gradient(135deg,#EEF2FF,#DDD6FE);color:var(--sky2);}
+.day-btn.avail:hover{transform:scale(1.08);}
+.day-btn.current{background:linear-gradient(135deg,var(--sky),var(--sky2));color:#fff;
+  animation:pls 1.6s infinite;}
+.day-btn.done{background:linear-gradient(135deg,var(--mint),#059669);color:#fff;}
+.day-btn.done::after{content:'✓';position:absolute;top:-3px;right:-3px;
+  background:var(--gold);color:#fff;border-radius:50%;width:13px;height:13px;
+  font-size:8px;display:flex;align-items:center;justify-content:center;}
+@keyframes pls{0%,100%{box-shadow:0 2px 10px rgba(59,130,246,.4)}
+  50%{box-shadow:0 2px 20px rgba(59,130,246,.7)}}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:11px 20px;
+  border:none;border-radius:11px;font-weight:800;font-size:.92rem;
+  cursor:pointer;transition:all.2s;}
+.btn:hover{transform:translateY(-2px);}
+.btn-sky{background:linear-gradient(135deg,var(--sky),var(--sky2));color:#fff;
+  box-shadow:0 4px 12px rgba(59,130,246,.3);}
+.btn-violet{background:linear-gradient(135deg,var(--violet),#6D28D9);color:#fff;
+  box-shadow:0 4px 12px rgba(139,92,246,.3);}
+.btn-mint{background:linear-gradient(135deg,var(--mint),#059669);color:#fff;
+  box-shadow:0 4px 12px rgba(16,185,129,.3);}
+.btn-gray{background:linear-gradient(135deg,#94A3B8,#64748B);color:#fff;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+
+/* LESSON */
+.lesson-hdr{background:linear-gradient(135deg,#4F46E5,#7C3AED);
+  border-radius:16px;padding:15px 18px;margin-bottom:12px;
+  box-shadow:0 6px 20px rgba(79,70,229,.3);}
+.lesson-badge{display:inline-block;background:rgba(255,255,255,.2);
+  border-radius:8px;padding:3px 11px;color:#fff;font-weight:800;
+  font-size:.75rem;margin-bottom:6px;}
+.lesson-title{color:#fff;font-size:1.55rem;font-weight:900;line-height:1.2;}
+.lesson-meta{color:rgba(255,255,255,.72);font-size:.78rem;font-weight:600;margin-top:3px;}
+.lesson-body{display:flex;flex-direction:column;gap:11px;}
+
+.l-card{background:#fff;border-radius:14px;padding:17px;
+  box-shadow:0 3px 11px rgba(0,0,0,.06);animation:fadeUp .4s ease both;}
+.l-card h3{color:var(--ink);font-size:1rem;font-weight:800;margin-bottom:8px;
+  display:flex;align-items:center;gap:7px;}
+.l-tag{display:inline-block;padding:2px 9px;border-radius:6px;
+  font-size:.68rem;font-weight:800;text-transform:uppercase;}
+.tag-c{background:#EEF2FF;color:var(--sky2);}
+.tag-s{background:#F5F3FF;color:#4C1D95;}
+.tag-f{background:#ECFDF5;color:#065F46;}
+.tag-p{background:#FFF7ED;color:#9A3412;}
+
+.concept-box{background:linear-gradient(135deg,#EEF2FF,#E0E7FF);
+  border-radius:11px;padding:14px;font-size:.93rem;line-height:1.85;
+  color:#1E3A8A;font-weight:600;}
+.concept-box strong{color:var(--sky2);font-weight:800;}
+
+.fact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+  gap:5px;margin:8px 0;}
+.fact-cell{background:linear-gradient(135deg,#EEF2FF,#E0E7FF);border-radius:7px;
+  padding:7px;text-align:center;font-size:.85rem;color:var(--ink);
+  font-weight:700;border:2px solid transparent;transition:all.2s;}
+.fact-cell:hover{border-color:var(--sky);}
+.fact-cell.key{background:linear-gradient(135deg,var(--sky),var(--sky2));color:#fff;}
+.fact-caption{font-size:.75rem;color:var(--muted);font-weight:600;
+  margin-top:5px;font-style:italic;}
+
+.strat-box{background:linear-gradient(135deg,#F5F3FF,#EDE9FE);
+  border-radius:11px;padding:14px;border-left:4px solid var(--violet);}
+.strat-title{color:var(--violet);font-size:.92rem;font-weight:800;margin-bottom:7px;}
+.strat-step{display:flex;gap:8px;margin-bottom:6px;align-items:flex-start;}
+.step-num{min-width:22px;height:22px;background:var(--violet);color:#fff;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:.72rem;flex-shrink:0;}
+.step-txt{font-size:.88rem;font-weight:600;color:#2D1B69;line-height:1.5;}
+
+/* QUIZ */
+.quiz-hdr{background:linear-gradient(135deg,#059669,#10B981);
+  border-radius:16px;padding:14px 18px;margin-bottom:12px;
+  box-shadow:0 6px 20px rgba(5,150,105,.3);}
+.quiz-badge{display:inline-block;background:rgba(255,255,255,.2);
+  border-radius:8px;padding:3px 11px;color:#fff;font-weight:800;
+  font-size:.75rem;margin-bottom:5px;}
+.quiz-title{color:#fff;font-size:1.45rem;font-weight:900;}
+
+.quiz-meta{display:flex;gap:8px;align-items:center;background:#fff;
+  border-radius:11px;padding:10px 13px;margin-bottom:11px;
+  box-shadow:0 3px 10px rgba(0,0,0,.06);flex-wrap:wrap;}
+.qm{display:flex;align-items:center;gap:5px;font-weight:700;font-size:.82rem;}
+
+.prog-track{display:flex;gap:4px;margin-bottom:11px;flex-wrap:wrap;}
+.pt{flex:1;min-width:14px;height:8px;border-radius:4px;
+  background:#E2E8F0;transition:background.3s;}
+.pt.c{background:var(--mint);}
+.pt.w{background:var(--rose);opacity:.6;}
+.pt.cur{background:var(--sky);animation:blk 1s infinite;}
+@keyframes blk{0%,100%{opacity:1}50%{opacity:.4}}
+
+.q-card{background:#fff;border-radius:16px;padding:18px;
+  box-shadow:0 4px 16px rgba(0,0,0,.08);margin-bottom:11px;}
+.q-num{font-size:.75rem;font-weight:800;color:var(--muted);
+  margin-bottom:5px;text-transform:uppercase;}
+.q-text{font-size:1.35rem;color:var(--ink);line-height:1.3;
+  margin-bottom:6px;font-weight:800;}
+.q-vis{font-size:1.05rem;color:#334155;font-weight:700;
+  background:#F8FAFC;border-radius:9px;padding:8px 11px;
+  margin-bottom:6px;line-height:1.6;}
+
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.choice{padding:13px;border:3px solid var(--border);border-radius:13px;
+  background:#fff;font-weight:800;font-size:.98rem;cursor:pointer;
+  transition:all.2s;color:var(--ink);text-align:center;line-height:1.3;}
+.choice:hover:not(:disabled){border-color:var(--sky);background:#EEF2FF;transform:translateY(-2px);}
+.choice.c-right{border-color:var(--mint);background:#ECFDF5;color:#065F46;
+  animation:cPop.4s ease;}
+.choice.c-wrong{border-color:var(--rose);background:#FEF2F2;color:#991B1B;
+  animation:cShake.4s ease;}
+@keyframes cPop{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes cShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.choice:disabled{cursor:default;}
+
+.feedback{border-radius:13px;padding:13px;margin-top:9px;display:none;}
+.feedback.show{display:block;animation:fadeUp.3s ease;}
+.fb-ok{background:#ECFDF5;border-left:5px solid var(--mint);}
+.fb-no{background:#FEF2F2;border-left:5px solid var(--rose);}
+.fb-title{font-size:1rem;font-weight:800;margin-bottom:5px;}
+.fb-ok .fb-title{color:#065F46;}
+.fb-no .fb-title{color:#991B1B;}
+.fb-body{font-size:.88rem;font-weight:600;color:#334155;line-height:1.65;}
+
+.next-wrap{display:none;text-align:center;margin-top:11px;}
+.next-wrap.show{display:block;animation:fadeUp.3s ease;}
+
+/* ACHIEVEMENT */
+.ach{background:linear-gradient(160deg,#FFF7ED,#FDF4FF,#EFF6FF);
+  border-radius:20px;padding:28px 18px;text-align:center;
+  box-shadow:0 8px 26px rgba(0,0,0,.1);}
+.ach-trophy{font-size:4.5rem;animation:tB.6s ease;}
+@keyframes tB{0%{transform:scale(0) rotate(-15deg)}60%{transform:scale(1.15) rotate(5deg)}100%{transform:scale(1)}}
+.ach-title{font-size:1.9rem;color:var(--ink);margin:10px 0 4px;font-weight:900;}
+.ach-sub{font-size:.9rem;color:var(--muted);font-weight:600;margin-bottom:16px;}
+.stars-row{display:flex;justify-content:center;gap:8px;margin:13px 0;}
+.star-i{font-size:2.4rem;animation:sB.5s ease both;}
+.star-i:nth-child(1){animation-delay:.1s}.star-i:nth-child(2){animation-delay:.2s}.star-i:nth-child(3){animation-delay:.3s}
+@keyframes sB{0%{transform:scale(0) rotate(-180deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+.lv-pill{display:inline-block;border-radius:28px;padding:8px 22px;
+  font-size:1rem;color:#fff;margin:7px auto;font-weight:800;
+  box-shadow:0 4px 14px rgba(0,0,0,.15);}
+.score-cards{display:flex;justify-content:center;gap:9px;margin:13px 0;flex-wrap:wrap;}
+.sc{background:#fff;border-radius:13px;padding:11px 15px;
+  text-align:center;min-width:78px;box-shadow:0 3px 10px rgba(0,0,0,.07);}
+.sc-num{font-size:1.7rem;font-weight:900;}
+.sc-lbl{font-size:.68rem;color:var(--muted);font-weight:700;text-transform:uppercase;}
+.ach-msg{background:#fff;border-radius:13px;padding:13px;margin:13px 0;
+  font-size:.88rem;font-weight:600;color:#334155;line-height:1.7;text-align:left;
+  box-shadow:0 3px 10px rgba(0,0,0,.06);}
+
+/* CONFETTI */
+.confetti-layer{position:fixed;inset:0;pointer-events:none;z-index:999;}
+.cp{position:absolute;top:-10px;border-radius:2px;animation:cFall linear forwards;}
+@keyframes cFall{0%{transform:translateY(-10px) rotate(0);opacity:1}
+  100%{transform:translateY(110vh) rotate(720deg) scale(.5);opacity:0}}
+
+@media(max-width:600px){
+  .topbar{flex-direction:column;gap:8px;}
+  .topbar-right{justify-content:center;}
+  .day-grid{grid-template-columns:repeat(6,1fr);}
+  .choices{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<div class="bg">
+  <div class="bubble" style="width:150px;height:150px;background:#3B82F6;top:3%;left:2%;animation-delay:0s;"></div>
+  <div class="bubble" style="width:90px;height:90px;background:#8B5CF6;top:15%;right:4%;animation-delay:3s;"></div>
+  <div class="bubble" style="width:70px;height:70px;background:#10B981;bottom:8%;left:10%;animation-delay:5s;"></div>
+  <div class="bubble" style="width:110px;height:110px;background:#F59E0B;bottom:20%;right:8%;animation-delay:2s;"></div>
+</div>
+<div id="app">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon">🧠</div>
+      <div>
+        <h1>Rajveer's Grade 1 Math Quest</h1>
+        <p>NJ Advanced · 60 Days · Built for iPad</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="stat-pill">⭐ <span id="starsEl">0</span></div>
+      <div class="stat-pill">🏅 <span id="levelEl">Rookie</span></div>
+      <button class="snd-btn" id="sndBtn" onclick="toggleSound()">🔊 ON</button>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div id="screen-home" class="screen active">
+    <div class="hero">
+      <div class="hero-rocket">🚀</div>
+      <h2>Level up, Rajveer!</h2>
+      <p>Advanced Grade 1 Math · NJ Standards · 60-Day Challenge</p>
+    </div>
+    <div class="today-card" id="todayCard">
+      <h3>Today's Challenge</h3>
+      <div class="topic-tag" id="todayTag">Loading...</div>
+      <div id="todayDesc" style="font-size:.84rem;color:var(--muted);font-weight:600;margin-bottom:11px;"></div>
+      <div class="btn-row">
+        <button class="btn btn-violet" onclick="startLesson()">📖 Lesson</button>
+        <button class="btn btn-mint" onclick="startQuiz()">🧠 Quiz</button>
+      </div>
+    </div>
+    <div class="prog-box">
+      <h3>Journey Progress</h3>
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+        <span style="font-weight:700;font-size:.85rem;">Day <span id="progDay">1</span> of 60</span>
+        <span style="font-weight:700;font-size:.85rem;color:var(--mint);" id="progPct">0%</span>
+      </div>
+      <div class="prog-bar-bg"><div class="prog-bar-fill" id="progBar" style="width:0%"></div></div>
+      <div class="prog-stats">
+        <div class="pstat"><div class="num" id="sStars">0</div><div class="lbl">Stars</div></div>
+        <div class="pstat"><div class="num" id="sDays">0</div><div class="lbl">Done</div></div>
+        <div class="pstat"><div class="num" id="sPerfect">0</div><div class="lbl">Perfect</div></div>
+        <div class="pstat"><div class="num" id="sStreak">0</div><div class="lbl">Streak 🔥</div></div>
+      </div>
+    </div>
+    <div class="day-picker">
+      <h3>All 60 Days</h3>
+      <div class="unit-tabs" id="unitTabs"></div>
+      <div class="day-grid" id="dayGrid"></div>
+    </div>
+  </div>
+
+  <!-- LESSON -->
+  <div id="screen-lesson" class="screen">
+    <div class="lesson-hdr">
+      <div class="lesson-badge">Lesson · Day <span id="lDayEl">1</span></div>
+      <div class="lesson-title" id="lTitleEl">Title</div>
+      <div class="lesson-meta" id="lMetaEl">Unit · NJ Grade 1 Advanced</div>
+    </div>
+    <div class="lesson-body" id="lessonBody"></div>
+    <div class="btn-row" style="margin-top:13px;">
+      <button class="btn btn-mint" onclick="finishLesson()">Got It — Take Quiz!</button>
+      <button class="btn btn-gray" onclick="goHome()">Home</button>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="screen-quiz" class="screen">
+    <div class="quiz-hdr">
+      <div class="quiz-badge">Quiz · Day <span id="qDayEl">1</span></div>
+      <div class="quiz-title" id="qTitleEl">Quiz</div>
+    </div>
+    <div class="quiz-meta">
+      <div class="qm" style="color:var(--mint);">✅ <span id="liveC">0</span> correct</div>
+      <div style="margin-left:auto;"></div>
+      <div class="qm" style="color:var(--rose);">❌ <span id="liveW">0</span> missed</div>
+      <div class="qm" style="color:var(--sky);">📝 <span id="liveT">0</span> total</div>
+    </div>
+    <div class="prog-track" id="progTrack"></div>
+    <div id="qArea"></div>
+  </div>
+
+  <!-- ACHIEVEMENT -->
+  <div id="screen-ach" class="screen">
+    <div class="ach" id="achContent"></div>
+  </div>
+</div>
+<div class="confetti-layer" id="confettiLayer"></div>
+<script>
+const UNITS=[
+  {id:1,name:"Numbers to 120",color:"#3B82F6",days:[1,2,3,4,5,6,7,8,9,10]},
+  {id:2,name:"Addition Mastery",color:"#10B981",days:[11,12,13,14,15,16,17,18,19,20]},
+  {id:3,name:"Subtraction Mastery",color:"#8B5CF6",days:[21,22,23,24,25,26,27,28,29,30]},
+  {id:4,name:"Place Value & Compare",color:"#F59E0B",days:[31,32,33,34,35,36,37,38,39,40]},
+  {id:5,name:"Geometry & Fractions",color:"#EC4899",days:[41,42,43,44,45,46,47,48,49,50]},
+  {id:6,name:"Measurement & Data",color:"#F97316",days:[51,52,53,54,55,56,57,58,59,60]},
+];
+
+function Q(q,v,a,c,h){return{q,v:v||"",a,c,h};}
+
+const CURRICULUM=[
+// ── DAY 1 ──────────────────────────────────────────────────────────────────
+{day:1,unit:1,topic:"Counting to 120",emoji:"💯",desc:"Count forward/backward within 120; spot patterns",
+sections:[
+  {type:"concept",tag:"Key Idea",title:"Numbers 100 to 120",
+   body:`After 99 comes 100. Numbers 101–120 follow the same pattern as 1–20, just with one hundred in front.\n\n<strong>101</strong> = one hundred one\n<strong>115</strong> = one hundred fifteen\n<strong>120</strong> = one hundred twenty\n\nThe ones and tens digits work exactly the same way!`},
+  {type:"facts",tag:"Skip Counting",title:"Skip Count to 120",
+   facts:["By 2s: 100,102,104,106,108,110,112,114,116,118,120",
+          "By 5s: 100,105,110,115,120",
+          "By 10s: 100,110,120",
+          "Pattern: ones digit shows the rule!"],keys:[0,1,2]},
+  {type:"concept",tag:"Mental Math",title:"10 More / 10 Less",
+   body:`When you add 10, only the <strong>tens digit</strong> changes. The ones digit stays the same!\n\n107 + 10 = <strong>117</strong> (7 stays, tens goes 0→1)\n115 − 10 = <strong>105</strong> (5 stays, tens goes 1→0)\n\nBridging 100: 95 + 10 = <strong>105</strong>`},
+  {type:"strategy",tag:"Strategy",title:"Count On / Count Back",
+   steps:["Pick a starting number","Count on (+1 each step) or count back (-1 each step)","When you reach 99 → next is 100","When you reach 109 → next is 110","Tip: say the numbers OUT LOUD as you count"]}
+],
+quiz:[
+  Q("What comes after 119?","119 → ?",120,[117,118,119,120],"Count up: 118, 119, 120!"),
+  Q("Count by 10s: 100, 110, ___","",120,[115,118,120,125],"Add 10: 110 + 10 = 120!"),
+  Q("10 more than 107","107 + 10 = ?",117,[108,110,117,118],"Tens digit goes up: 0 → 1. Answer: 117!"),
+  Q("One hundred fifteen in digits?","one hundred fifteen",115,[105,115,150,151],"100 + 15 = 115!"),
+  Q("Count backward: 115, 114, 113, ___","",112,[110,111,112,113],"Counting down by 1: after 113 comes 112!"),
+  Q("Count by 2s: 106, 108, 110, ___","",112,[110,111,112,114],"Add 2: 110 + 2 = 112!"),
+  Q("What is between 117 and 119?","117 ___ 119",118,[116,117,118,120],"117, 118, 119. The middle number is 118!"),
+  Q("10 less than 120","120 − 10 = ?",110,[100,108,110,115],"Tens digit drops: 2 → 1. Answer: 110!"),
+  Q("What comes before 101?","? → 101",100,[99,100,101,102],"100 comes right before 101!"),
+  Q("Count by 5s: 100, 105, 110, ___","",115,[112,113,115,120],"Add 5: 110 + 5 = 115!"),
+  Q("How many tens in 120?","120 = ___ tens",12,[10,11,12,20],"120 = 12 groups of 10!"),
+  Q("10 more than 95","95 + 10 = ?",105,[96,100,104,105],"Cross 100! 95 + 10 = 105!"),
+  Q("One hundred seven in digits?","one hundred seven",107,[107,117,170,700],"100 + 7 = 107!"),
+  Q("Jumps of 2 from 100 to 110?","100, 102, 104, 106, 108, 110",5,[4,5,6,7],"5 jumps of 2!"),
+  Q("1 less than 110","110 − 1 = ?",109,[100,108,109,111],"109, 110. Before 110 is 109!"),
+  Q("Count by 5s: 110, 115, ___","",120,[116,118,120,125],"115 + 5 = 120!"),
+  Q("10 more than 113","113 + 10 = ?",123,[114,120,123,130],"Tens go up: 113 → 123!"),
+  Q("Ones digit of 116?","116",6,[1,6,11,16],"116 = 11 tens + 6 ones. Ones digit = 6!")
+]},
+
+// ── DAY 2 ──────────────────────────────────────────────────────────────────
+{day:2,unit:1,topic:"Odd and Even Numbers",emoji:"🔢",desc:"Identify odd/even to 100; discover addition rules",
+sections:[
+  {type:"concept",tag:"Key Idea",title:"Even vs Odd",
+   body:`<strong>EVEN</strong> numbers split into equal pairs — nothing left over.\nThey end in: 0, 2, 4, 6, or 8.\n\n<strong>ODD</strong> numbers always have one left over.\nThey end in: 1, 3, 5, 7, or 9.\n\nQuick test: look at the <strong>last digit only!</strong>\n74 ends in 4 → EVEN\n83 ends in 3 → ODD`},
+  {type:"facts",tag:"Rules",title:"Even + Odd Rules",
+   facts:["Even + Even = Even  (4 + 6 = 10)","Odd + Odd = Even  (5 + 7 = 12)","Even + Odd = Odd  (4 + 3 = 7)","Odd + Even = Odd  (3 + 4 = 7)"],keys:[0,1,2,3]},
+  {type:"strategy",tag:"Strategy",title:"Pairing Check",
+   steps:["Line up objects in pairs","All paired? → EVEN","One left alone? → ODD","Example: 7 objects = 3 pairs + 1 leftover → ODD"]}
+],
+quiz:[
+  Q("Is 47 odd or even?","47","Odd",["Odd","Even"],"47 ends in 7 → ODD!"),
+  Q("Is 68 odd or even?","68","Even",["Odd","Even"],"68 ends in 8 → EVEN!"),
+  Q("Even + Even = ?","4 + 6 = 10","Even",["Odd","Even"],"Even + Even always = Even!"),
+  Q("Odd + Odd = ?","5 + 7 = 12","Even",["Odd","Even"],"Odd + Odd always = Even!"),
+  Q("Even + Odd = ?","4 + 3 = 7","Odd",["Odd","Even"],"Even + Odd always = Odd!"),
+  Q("Next even number after 16?","16, ___, 20",18,[17,18,19,20],"Even numbers: 14, 16, 18, 20. Next is 18!"),
+  Q("Next odd number after 13?","13, ___, 17",15,[14,15,16,17],"Odd numbers: 11, 13, 15, 17. Next is 15!"),
+  Q("Is 100 odd or even?","100","Even",["Odd","Even"],"100 ends in 0 → EVEN!"),
+  Q("Which is ODD?","","31",["18","24","31","50"],"31 ends in 1 → ODD!"),
+  Q("Is 0 odd or even?","0","Even",["Odd","Even","Neither"],"0 is EVEN — no leftovers!"),
+  Q("9 + 7 = 16. Is 16 odd or even?","9 + 7 = 16","Even",["Odd","Even"],"Odd + Odd = Even! 9 + 7 = 16 ✓"),
+  Q("6 + 5 = 11. Is 11 odd or even?","6 + 5 = 11","Odd",["Odd","Even"],"Even + Odd = Odd! 6 + 5 = 11 ✓"),
+  Q("True: all numbers ending in 5 are odd?","","True",["True","False"],"Numbers ending in 5 are always odd!"),
+  Q("Is 99 odd or even?","99","Odd",["Odd","Even"],"99 ends in 9 → ODD!"),
+  Q("Which set is ALL even?","","2, 8, 14, 20",["1,3,5,7","2,8,14,20","4,6,9,12","10,15,20"],"2, 8, 14, 20 all end in even digits!"),
+  Q("Is 55 + 33 odd or even?","55 is odd, 33 is odd","Even",["Odd","Even"],"Odd + Odd = Even! 55 + 33 = 88 ✓"),
+  Q("Largest even number less than 20?","",18,[16,17,18,19],"18 ends in 8 → even. 19 is odd. Answer: 18!"),
+  Q("What pattern? 2, 4, 6, 8, 10 ...","","Add 2 each time",["Add 1","Add 2 each time","Add 3","Double"],"Even numbers skip-count by 2!")
+]},
+
+// ── DAY 3 ──────────────────────────────────────────────────────────────────
+{day:3,unit:1,topic:"Comparing Numbers to 100",emoji:"⚖️",desc:"Use <, >, = to compare two-digit numbers using place value",
+sections:[
+  {type:"concept",tag:"Key Idea",title:"Compare Tens First",
+   body:`To compare two numbers, look at the <strong>TENS digit first</strong>.\n\nDifferent tens? Bigger tens = bigger number.\nSame tens? Look at the ONES digit.\n\n<strong>Symbols:</strong>\n> means GREATER THAN\n< means LESS THAN\n= means EQUAL TO\n\nExample: 74 vs 47\nTens: 7 > 4, so 74 > 47`},
+  {type:"strategy",tag:"Strategy",title:"The Crocodile Rule",
+   steps:["Compare TENS digits first","Bigger tens = bigger number (done!)","Same tens? Compare ONES digits","The answer side is where the open mouth points","Example: 74 > 47 because 7 tens > 4 tens"]},
+  {type:"facts",tag:"True or False",title:"Practice Problems",
+   facts:["52 > 25 — TRUE","38 < 83 — TRUE","45 > 54 — FALSE (4 tens < 5 tens)","71 = 71 — TRUE","90 > 89 — TRUE (same tens, 0 < 9... wait: 9 tens = 9 tens, then 0 < 9)"],keys:[0,1,3,4]}
+],
+quiz:[
+  Q("Compare: 45 ___ 54","","<",["<",">","="],"Tens: 4 < 5. So 45 < 54!"),
+  Q("Compare: 72 ___ 27","",">",["<",">","="],"Tens: 7 > 2. So 72 > 27!"),
+  Q("Compare: 63 ___ 63","","=",["<",">","="],"Same number! 63 = 63!"),
+  Q("Which is greater: 81 or 79?","81 vs 79",81,[79,80,81,90],"Tens: 8 > 7. So 81 is greater!"),
+  Q("Which is less: 48 or 84?","48 vs 84",48,[40,48,80,84],"Tens: 4 < 8. So 48 is less!"),
+  Q("Compare: 99 ___ 89","",">",["<",">","="],"Tens: 9 > 8. So 99 > 89!"),
+  Q("Order least to greatest: 52, 25, 15","","15, 25, 52",["52,25,15","15,25,52","25,15,52"],"Tens: 1, 2, 5. Order: 15, 25, 52!"),
+  Q("True: 40 < 41 < 42?","","True",["True","False"],"These are in ascending order! True!"),
+  Q("Which symbol? 40 ___ 39","",">",["<",">","="],"4 tens > 3 tens. So 40 > 39!"),
+  Q("Which statement is FALSE?","","90 < 89",["52>25","37<73","90<89","50=50"],"90 has 9 tens, 89 has 8 tens. 90 > 89, NOT less. False!"),
+  Q("Sam has 63 cards. Mia has 36. Who has more?","Sam: 63  Mia: 36","Sam",["Sam","Mia","Same"],"Tens: 6 > 3. Sam has more!"),
+  Q("Order greatest to least: 82, 28, 80","","82, 80, 28",["82,80,28","28,80,82","80,82,28"],"Tens: 8, 2, 8. Tie: 82 vs 80 → ones 2 > 0. Order: 82, 80, 28!"),
+  Q("Greatest: 49, 94, 44","","94",["44","49","94","99"],"Tens: 4, 9, 4. Nine tens is biggest → 94!"),
+  Q("True: 4 tens > 39?","40 vs 39","True",["True","False"],"40 has 4 tens. 39 has 3 tens. 4 > 3. True!"),
+  Q("Between 53 and 57?","53 ___ 57","55",["54","55","56","All of these"],"54, 55, 56 are between. 55 is the middle!"),
+  Q("If A > B and B > C, then A ___ C?","",">",["<",">","=","Can't tell"],"If A is bigger than B, and B is bigger than C, then A is also bigger than C!"),
+  Q("Compare: 5 + 7 ___ 4 + 8","Left:12  Right:12","=",["<",">","="],"5+7=12 and 4+8=12. Equal!"),
+  Q("True: 99 is the greatest 2-digit number?","","True",["True","False"],"99 = 9 tens + 9 ones. Largest 2-digit number!")
+]},
+
+// ── DAY 4 ──────────────────────────────────────────────────────────────────
+{day:4,unit:1,topic:"Skip Counting Patterns",emoji:"⚡",desc:"Skip count by 2, 5, and 10 to 120; find rules in patterns",
+sections:[
+  {type:"concept",tag:"Key Idea",title:"Skip Counting = Repeated Adding",
+   body:`Skip counting is the foundation of multiplication!\n\n<strong>By 2s</strong> = adding 2 each time\n<strong>By 5s</strong> = adding 5 each time\n<strong>By 10s</strong> = adding 10 each time\n\nTip: find the RULE by subtracting any two neighbors in the pattern.`},
+  {type:"facts",tag:"By 2s",title:"Count by 2s to 20",
+   facts:["2","4","6","8","10","12","14","16","18","20"],keys:[4,9]},
+  {type:"facts",tag:"By 5s",title:"Count by 5s to 60",
+   facts:["5","10","15","20","25","30","35","40","45","50","55","60"],keys:[1,3,5,7,9,11]},
+  {type:"facts",tag:"By 10s",title:"Count by 10s to 120",
+   facts:["10","20","30","40","50","60","70","80","90","100","110","120"],keys:[9,10,11]},
+  {type:"strategy",tag:"Strategy",title:"Finding the Missing Number",
+   steps:["Look at the numbers given","Subtract two neighbors to find the rule","Apply that rule to find the missing number","Example: 15, 20, ___, 30 → rule is +5 → answer is 25"]}
+],
+quiz:[
+  Q("Count by 2: 16, 18, ___, 22","",20,[19,20,21,22],"Add 2: 18 + 2 = 20!"),
+  Q("Count by 5: 35, 40, ___, 50","",45,[42,43,45,48],"Add 5: 40 + 5 = 45!"),
+  Q("Count by 10: 70, 80, ___, 100","",90,[85,88,90,95],"Add 10: 80 + 10 = 90!"),
+  Q("What is the rule? 3, 6, 9, 12, ___","",15,[13,14,15,16],"Add 3 each time! 12 + 3 = 15!"),
+  Q("Count by 2 backward: 20, 18, 16, ___","",14,[12,13,14,15],"Subtract 2: 16 − 2 = 14!"),
+  Q("Count by 5: ___, 25, 30, 35","",20,[15,20,22,25],"Work backward: 25 − 5 = 20!"),
+  Q("Count by 10: ___, 90, 100, 110","",80,[70,75,80,85],"Work backward: 90 − 10 = 80!"),
+  Q("Jumps of 2 from 0 to 10?","0, 2, 4, 6, 8, 10",5,[3,4,5,6],"5 jumps of 2!"),
+  Q("Count by 5: 100, 105, ___, 115","",110,[108,110,112,115],"105 + 5 = 110!"),
+  Q("What pattern? 12, 14, 16, 18","","Count by 2s",["Count by 1s","Count by 2s","Count by 3s","Count by 4s"],"Each number is 2 more — counting by 2s!"),
+  Q("4 boxes of 5 crayons = how many?","Use skip counting",20,[10,15,20,25],"5, 10, 15, 20. Four groups of 5!"),
+  Q("Jumps of 10 from 40 to 100?","40, 50, 60, 70, 80, 90, 100",6,[4,5,6,7],"6 jumps of 10!"),
+  Q("Fill in: ___, 55, 60, 65","",50,[45,48,50,52],"Work backward: 55 − 5 = 50!"),
+  Q("True: counting by 5s always ends in 0 or 5?","","True",["True","False"],"5, 10, 15, 20 — always ends in 5 or 0!"),
+  Q("What comes next: 98, 100, 102, ___","",104,[101,102,103,104],"Add 2: 102 + 2 = 104!"),
+  Q("Count by 10: 3, 13, 23, 33, ___","",43,[36,39,43,46],"Add 10: 33 + 10 = 43!"),
+  Q("6 groups of 2 pencils = total?","2+2+2+2+2+2",12,[10,11,12,14],"Count by 2s six times: 2, 4, 6, 8, 10, 12!"),
+  Q("Rule: 5, 10, 15 — how many more jumps to reach 40?","",3,[2,3,4,5],"20, 25, 30, 35, 40 — 3 more jumps from 25!")
+]},
+
+// ── DAY 5 ──────────────────────────────────────────────────────────────────
+{day:5,unit:1,topic:"10 More / 10 Less / 1 More / 1 Less",emoji:"🔄",desc:"Mental math within 120; bridge decades and 100",
+sections:[
+  {type:"concept",tag:"Key Idea",title:"Which Digit Changes?",
+   body:`<strong>+ 1 or − 1:</strong> Only the ONES digit changes.\n<strong>+ 10 or − 10:</strong> Only the TENS digit changes.\n\nExample with 53:\n• 1 more = 54\n• 1 less = 52\n• 10 more = 63\n• 10 less = 43\n\nWatch out for bridging! 95 + 10 = 105 (cross 100!)`},
+  {type:"facts",tag:"Quick Reference",title:"Examples",
+   facts:["47 + 1 = 48","47 − 1 = 46","47 + 10 = 57","47 − 10 = 37","83 + 10 = 93","83 − 10 = 73","99 + 1 = 100","100 − 1 = 99"],keys:[2,3,4,5]},
+  {type:"strategy",tag:"Strategy",title:"Hundreds Chart Shortcut",
+   steps:["On a hundreds chart: RIGHT = +1, LEFT = −1","DOWN one row = +10, UP one row = −10","The ones digit NEVER changes when you add or subtract 10","The tens digit NEVER changes when you add or subtract 1","Exception: crossing a decade (e.g., 99 + 1 = 100)"]}
+],
+quiz:[
+  Q("10 more than 45","45 + 10 = ?",55,[46,54,55,56],"Tens go up: 4→5. Ones stay 5. Answer: 55!"),
+  Q("10 less than 72","72 − 10 = ?",62,[61,62,63,73],"Tens go down: 7→6. Ones stay 2. Answer: 62!"),
+  Q("1 more than 99","99 + 1 = ?",100,[98,99,100,101],"99 + 1 = 100! Cross into three digits!"),
+  Q("1 less than 50","50 − 1 = ?",49,[48,49,50,51],"Before 50 is 49!"),
+  Q("10 more than 108","108 + 10 = ?",118,[109,110,118,120],"108 + 10 = 118!"),
+  Q("10 less than 100","100 − 10 = ?",90,[89,90,91,100],"100 − 10 = 90!"),
+  Q("Ones digit of 67 + 10?","67 + 10 = 77","7",["6","7","8","0"],"Adding 10 NEVER changes the ones digit!"),
+  Q("83 + 10 = ?","",93,[84,90,93,94],"Tens: 8→9. Ones: 3. Answer: 93!"),
+  Q("1 less than 70","70 − 1 = ?",69,[68,69,70,71],"Before 70 is 69!"),
+  Q("10 more than 95","95 + 10 = ?",105,[96,100,104,105],"Cross 100! 95 + 10 = 105!"),
+  Q("What changes when you add 10?","","Only the tens digit",["Ones digit","Tens digit","Both","Neither"],"Adding 10 only changes the tens digit!"),
+  Q("Start at 34, add 10 three times","34 + 10 + 10 + 10",64,[54,60,64,74],"34→44→54→64!"),
+  Q("10 less than 116","116 − 10 = ?",106,[106,107,115,110],"116 − 10 = 106!"),
+  Q("Times to add 10 from 50 to 80?","",3,[2,3,4,5],"50→60→70→80. Three times!"),
+  Q("Start at 75, add 10 twice","75 + 10 + 10",95,[85,90,95,100],"75 + 10 = 85, 85 + 10 = 95!"),
+  Q("Which digit changes in 57 + 10 = 67?","","Tens digit: 5 → 6",["Ones","Tens: 5→6","Hundreds","None"],"5 became 6 — tens digit changed!"),
+  Q("10 more than 99","99 + 10 = ?",109,[100,108,109,110],"99 + 10 = 109!"),
+  Q("Add 10 three times starting at 90","90 + 10 + 10 + 10",120,[100,110,115,120],"90→100→110→120!")
+]},
+{day:6,unit:2,topic:"Addition Facts Fluency",emoji:"\u2795",desc:"Master all addition facts within 20 instantly",sections:[{"type": "concept", "tag": "Key Idea", "title": "What is Fluency?", "body": "Fluency means knowing facts INSTANTLY without counting fingers.\n\nKnowing 8 + 7 = 15 right away (like knowing your name) frees your brain for harder problems.\n\nGoal: ALL facts where the sum is 20 or less."}, {"type": "facts", "tag": "Doubles", "title": "Doubles to Memorize", "facts": ["1+1=2", "2+2=4", "3+3=6", "4+4=8", "5+5=10", "6+6=12", "7+7=14", "8+8=16", "9+9=18", "10+10=20"], "keys": [4, 5, 6, 7, 8]}, {"type": "strategy", "tag": "Strategy 1", "title": "Make a 10", "steps": ["Pick the number closer to 10", "How much more to reach 10? That is the bridge", "Take the bridge amount from the other number", "Add 10 + what is left", "Example: 8 + 5 → bridge is 2 → 8 + 2 = 10 → 10 + 3 = 13"]}, {"type": "strategy", "tag": "Strategy 2", "title": "Near Doubles", "steps": ["When two numbers are 1 or 2 apart, use a double", "Double the smaller number, then add the difference", "Example: 7 + 8 → double 7 = 14, add 1 → 15", "Example: 6 + 8 → double 6 = 12, add 2 → 14"]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"Near-double: 8 + 8 = 16, add 1 = 17. Or 9 + 1 = 10, 10 + 7 = 17!"),Q("7 + 6 = ?","",13,[11, 12, 13, 14],"Make a 10: 7 + 3 = 10, 10 + 3 = 13!"),Q("8 + 5 = ?","",13,[11, 12, 13, 14],"Make a 10: 8 + 2 = 10, 10 + 3 = 13!"),Q("9 + 7 = ?","",16,[14, 15, 16, 17],"Make a 10: 9 + 1 = 10, 10 + 6 = 16!"),Q("6 + 8 = ?","",14,[12, 13, 14, 15],"Near-double: 6 + 6 = 12, add 2 = 14!"),Q("7 + 7 = ?","",14,[12, 13, 14, 16],"Double 7 = 14. Memorize this one!"),Q("8 + 8 = ?","",16,[14, 15, 16, 18],"Double 8 = 16. Memorize this one!"),Q("9 + 9 = ?","",18,[16, 17, 18, 20],"Double 9 = 18. Memorize this one!"),Q("6 + 7 = ?","",13,[11, 12, 13, 14],"Near-double: 6 + 6 = 12, add 1 = 13!"),Q("5 + 8 = ?","",13,[11, 12, 13, 14],"Make a 10: 8 + 2 = 10, 10 + 3 = 13!"),Q("What two numbers make 15?","? + ? = 15","7 + 8 or 6 + 9",["5+9", "6+9 or 7+8", "8+8", "Impossible"],"7 + 8 = 15 and 6 + 9 = 15 both work!"),Q("9 + 4 = ?","",13,[11, 12, 13, 14],"9 + 1 = 10, 10 + 3 = 13!"),Q("7 + 9 = ?","",16,[15, 16, 17, 18],"9 + 1 = 10, 10 + 6 = 16!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both equal 15!"),Q("What is missing? 8 + ___ = 15","",7,[5, 6, 7, 8],"15 \u2212 8 = 7!"),Q("What is missing? 6 + ___ = 13","",7,[5, 6, 7, 8],"13 \u2212 6 = 7!"),Q("Largest sum of two single-digit numbers?","","18",["17", "18", "19", "20"],"9 + 9 = 18. That is the biggest!"),Q("Near-double: 8 + 9 = ?","double 8 then + 1",17,[15, 16, 17, 18],"8 + 8 = 16, add 1 = 17!")]},
+{day:7,unit:2,topic:"Making Ten to Add",emoji:"",desc:"Decompose numbers to make 10; apply to all sums within 20",sections:[{"type": "concept", "tag": "Key Idea", "title": "Why Make a 10?", "body": "10 is the easiest number to add to! Once you reach 10, the rest is simple.\n\nFor 7 + 5:\n1. 7 needs 3 more to reach 10\n2. Split 5 into 3 + 2\n3. 7 + 3 = 10\n4. 10 + 2 = 12\n\nThe amount needed to reach 10 is called the BRIDGE."}, {"type": "facts", "tag": "Bridge Values", "title": "How Much Each Number Needs", "facts": ["9 needs 1 more", "8 needs 2 more", "7 needs 3 more", "6 needs 4 more", "5 needs 5 more"], "keys": [0, 1, 2, 3, 4]}, {"type": "facts", "tag": "Examples", "title": "Make a 10 in Action", "facts": ["9+5: bridge 1, 9+1=10, 10+4=14", "8+6: bridge 2, 8+2=10, 10+4=14", "7+6: bridge 3, 7+3=10, 10+3=13", "8+7: bridge 2, 8+2=10, 10+5=15", "9+8: bridge 1, 9+1=10, 10+7=17"], "keys": [0, 1, 2, 3, 4]}],quiz:[Q("9 + 5 = ? (make a 10)","9 + 1 + 4 = ?",14,[12, 13, 14, 15],"9 + 1 = 10, 10 + 4 = 14!"),Q("8 + 7 = ? (make a 10)","8 + 2 + 5 = ?",15,[13, 14, 15, 16],"8 + 2 = 10, 10 + 5 = 15!"),Q("7 + 6 = ? (bridge from 7 to 10)","",13,[11, 12, 13, 14],"7 + 3 = 10, 10 + 3 = 13!"),Q("9 + 3 = ?","bridge from 9",12,[10, 11, 12, 13],"9 + 1 = 10, 10 + 2 = 12!"),Q("8 + 4 = ?","",12,[10, 11, 12, 13],"8 + 2 = 10, 10 + 2 = 12!"),Q("8 + 5 = ?","",13,[11, 12, 13, 14],"8 + 2 = 10, 10 + 3 = 13!"),Q("Bridge: how much does 7 need to reach 10?","",3,[1, 2, 3, 4],"7 + 3 = 10. Bridge = 3!"),Q("9 + 6 = ?","9 + 1 + 5",15,[13, 14, 15, 16],"9 + 1 = 10, 10 + 5 = 15!"),Q("Bridge from 8 to 10?","",2,[1, 2, 3, 4],"8 + 2 = 10. Bridge = 2!"),Q("6 + 8 = ?","6 + 4 + 4",14,[12, 13, 14, 15],"6 + 4 = 10, 10 + 4 = 14!"),Q("8 + 9 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17. Or 8 + 2 = 10, 10 + 7 = 17!"),Q("7 + ___ = 10 (the bridge)","",3,[1, 2, 3, 4],"7 + 3 = 10. Bridge = 3!"),Q("5 + 7 = ? (bridge from 5)","5 + 5 + 2",12,[10, 11, 12, 13],"5 + 5 = 10, 10 + 2 = 12!"),Q("3 + 8 = ?","8 + 2 + 1",11,[9, 10, 11, 12],"8 + 2 = 10, 10 + 1 = 11!"),Q("9 + 7 = ?","",16,[14, 15, 16, 17],"9 + 1 = 10, 10 + 6 = 16!"),Q("Bridge for 8 + 6?","","2",["4", "2", "6", "8"],"8 needs 2 to reach 10!"),Q("6 + ___ = 10?","",4,[2, 3, 4, 5],"6 + 4 = 10!"),Q("True: make a 10 works for any addition?","","True",["True", "False"],"Yes! Any addition can use this strategy!")]},
+{day:8,unit:2,topic:"Adding Two-Digit Numbers",emoji:"",desc:"Add two-digit numbers with and without regrouping",sections:[{"type": "concept", "tag": "Key Idea", "title": "Ones First, Tens Second", "body": "Add ONES column first (right side), then TENS column (left side).\n\nNo regrouping:\n34 + 25 → Ones: 4+5=9, Tens: 3+2=5 → Answer: 59\n\nWith regrouping:\n47 + 35 → Ones: 7+5=12 (write 2, carry 1), Tens: 4+3+1=8 → Answer: 82\n\nYou regroup when the ones column adds up to 10 or more."}, {"type": "strategy", "tag": "Strategy", "title": "The Carry Method", "steps": ["Add ONES column first", "If the sum is 10 or more, write just the ones digit", "Carry the 1 ten to the tens column", "Add TENS column including any carried 1", "Write the full tens digit"]}, {"type": "facts", "tag": "No Regrouping", "title": "Easy Examples", "facts": ["23 + 14 = 37", "41 + 25 = 66", "52 + 37 = 89", "30 + 46 = 76"], "keys": [0, 2]}, {"type": "facts", "tag": "With Regrouping", "title": "Carry Examples", "facts": ["27 + 15 = 42 (7+5=12, carry 1)", "38 + 24 = 62", "46 + 37 = 83", "55 + 28 = 83"], "keys": [0, 1, 2, 3]}],quiz:[Q("23 + 14 = ?","Ones: 3+4=7, Tens: 2+1=3",37,[35, 36, 37, 38],"Ones: 3+4=7. Tens: 2+1=3. Answer: 37!"),Q("45 + 32 = ?","",77,[75, 76, 77, 78],"Ones: 5+2=7. Tens: 4+3=7. Answer: 77!"),Q("27 + 15 = ?","Ones: 7+5=12, carry 1",42,[40, 41, 42, 43],"7+5=12, carry 1. Tens: 2+1+1=4. Answer: 42!"),Q("38 + 24 = ?","",62,[60, 61, 62, 63],"8+4=12, carry 1. Tens: 3+2+1=6. Answer: 62!"),Q("46 + 37 = ?","",83,[81, 82, 83, 84],"6+7=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("52 + 7 = ?","",59,[57, 58, 59, 60],"Ones: 2+7=9. Tens: 5. Answer: 59!"),Q("When do you need to regroup?","","When ones sum is 10 or more",["Always", "Never", "When ones sum is 10 or more", "When tens are equal"],"Regroup when the ones digits add up to 10 or more!"),Q("63 + 29 = ?","",92,[88, 90, 92, 94],"9+9=18, carry 1. Tens: 6+2+1=9. Answer: 92!"),Q("78 + 21 = ?","",99,[97, 98, 99, 100],"8+1=9. Tens: 7+2=9. Answer: 99!"),Q("55 + 37 = ?","",92,[88, 90, 91, 92],"5+7=12, carry 1. Tens: 5+3+1=9. Answer: 92!"),Q("Raj: 48 stickers + Mia: 36 = total?","48 + 36 = ?",84,[82, 83, 84, 85],"8+6=14, carry 1. Tens: 4+3+1=8. Answer: 84!"),Q("25 + 43 = ?","",68,[66, 67, 68, 70],"5+3=8. Tens: 2+4=6. Answer: 68!"),Q("What does carrying 1 mean?","","Moving 1 ten to the tens column",["Adding 1 to answer", "Moving 1 ten to tens column", "Subtracting 1", "Doubling"],"When ones sum to 10+, trade 10 ones for 1 ten!"),Q("67 + 14 = ?","",81,[79, 80, 81, 82],"7+4=11, carry 1. Tens: 6+1+1=8. Answer: 81!"),Q("35 + 48 = ?","",83,[79, 81, 83, 85],"5+8=13, carry 1. Tens: 3+4+1=8. Answer: 83!"),Q("True: 56 + 37 = 93?","","True",["True", "False"],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93. True!"),Q("Check: 47 + 35 = 82?","82 \u2212 35 = 47?","Yes",["Yes", "No \u2014 should be 72", "No \u2014 should be 92"],"Check with subtraction: 82 \u2212 35 = 47. Correct!"),Q("What is the ones digit of 64 + 28?","6+4=10... wait: 4+8=12","2",["0", "2", "8", "12"],"4 + 8 = 12. Write 2 in ones place!")]},
+{day:9,unit:2,topic:"Adding Three Numbers",emoji:"3\ufe0f\u20e3",desc:"Add three numbers; use associative property to group efficiently",sections:[{"type": "concept", "tag": "Key Idea", "title": "Look for the 10 Pair First!", "body": "When adding 3 numbers, find any two that make 10 first!\n\n4 + 3 + 6 = ?\n4 + 6 = 10 (spot the pair!) → 10 + 3 = 13\n\nThis is the Associative Property: you can add numbers in any order and the sum stays the same."}, {"type": "facts", "tag": "Find the 10 Pair", "title": "Examples", "facts": ["2 + 8 + 5 = 15  (2+8=10)", "3 + 7 + 9 = 19  (3+7=10)", "6 + 4 + 7 = 17  (6+4=10)", "5 + 5 + 8 = 18  (5+5=10)", "9 + 1 + 6 = 16  (9+1=10)"], "keys": [0, 1, 2, 3, 4]}, {"type": "strategy", "tag": "Strategy", "title": "Three Steps", "steps": ["Scan all three numbers", "Find any pair that adds to 10", "Add those two FIRST", "Then add the third number to 10", "If no 10 pair, add the two largest, then the third"]}],quiz:[Q("2 + 8 + 5 = ?","Find the 10 pair!",15,[13, 14, 15, 16],"2 + 8 = 10, then 10 + 5 = 15!"),Q("3 + 7 + 9 = ?","",19,[17, 18, 19, 20],"3 + 7 = 10, then 10 + 9 = 19!"),Q("6 + 4 + 7 = ?","",17,[15, 16, 17, 18],"6 + 4 = 10, then 10 + 7 = 17!"),Q("5 + 5 + 8 = ?","",18,[16, 17, 18, 19],"5 + 5 = 10, then 10 + 8 = 18!"),Q("9 + 1 + 6 = ?","",16,[14, 15, 16, 17],"9 + 1 = 10, then 10 + 6 = 16!"),Q("Which pair makes 10? In: 7, 3, 5","","7 and 3",["7 and 5", "3 and 5", "7 and 3", "No pair"],"7 + 3 = 10!"),Q("8 + 4 + 2 = ?","",14,[12, 13, 14, 15],"8 + 2 = 10, then 10 + 4 = 14!"),Q("1 + 9 + 9 = ?","",19,[17, 18, 19, 20],"1 + 9 = 10, then 10 + 9 = 19!"),Q("Does order matter when adding 3 numbers?","","No \u2014 same sum",["Yes", "No \u2014 same sum", "Sometimes"],"Associative property: order never changes the sum!"),Q("Missing: 5 + ___ + 5 = 16","",6,[4, 5, 6, 7],"5 + 5 = 10, 16 \u2212 10 = 6!"),Q("7 + 7 + 6 = ?","",20,[18, 19, 20, 21],"7 + 7 = 14, 14 + 6 = 20!"),Q("Raj: 4, Mia: 8, Sam: 6 points. Total?","4 + 8 + 6",18,[16, 17, 18, 20],"4 + 6 = 10, 10 + 8 = 18!"),Q("3 bags: 5, 5, 7 apples. Total?","5 + 5 + 7",17,[15, 16, 17, 18],"5 + 5 = 10, 10 + 7 = 17!"),Q("9 + 5 + 1 = ?","",15,[13, 14, 15, 16],"9 + 1 = 10, 10 + 5 = 15!"),Q("What property lets you add in any order?","","Associative Property",["Commutative", "Associative", "Identity", "Zero"],"Associative: grouping does not change the sum!"),Q("4 + 7 + 3 = ?","",14,[12, 13, 14, 15],"7 + 3 = 10, 10 + 4 = 14!"),Q("24 + 31 + 22 = ?","Ones: 4+1+2=7, Tens: 2+3+2=7",77,[70, 74, 77, 80],"Ones: 4+1+2=7. Tens: 2+3+2=7. Answer: 77!"),Q("True: 2 + 9 + 8 = 9 + 8 + 2?","","True",["True", "False"],"Associative property \u2014 same numbers, same sum = 19!")]},
+{day:10,unit:1,topic:"Unit 1 Review and Challenge",emoji:"",desc:"Comprehensive review of Unit 1 concepts",sections:[{"type": "concept", "tag": "Review", "title": "What You Have Mastered", "body": "Unit 1 complete! You can now:\n\nCount to 120 forward and backward\nIdentify odd and even numbers\nCompare with < > = symbols\nSkip count by 2s, 5s, and 10s\nFind 10 more, 10 less, 1 more, 1 less\nAdd facts to 20 with fluency\nUse make a 10 and near doubles strategies\nAdd two-digit numbers with and without regrouping\nAdd three numbers by finding the 10 pair"}, {"type": "facts", "tag": "Speed Drill", "title": "Answer These Instantly", "facts": ["9+8=17", "7+7=14", "8+8=16", "9+9=18", "6+7=13", "8+5=13", "47+36=83", "28+65=93"], "keys": [0, 1, 2, 3, 6, 7]}, {"type": "strategy", "tag": "Challenge", "title": "Multi-Strategy Thinking", "steps": ["Single digits near 10? Use make a 10", "Addends 1 or 2 apart? Use near doubles", "Two-digit no regroup? Use place value columns", "Two-digit ones sum 10+? Use regrouping", "Three numbers? Find the 10 pair first"]}],quiz:[Q("9 + 9 = ?","",18,[16, 17, 18, 20],"Double 9 = 18!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("Is 74 odd or even?","74","Even",["Odd", "Even"],"74 ends in 4 \u2014 EVEN!"),Q("Compare: 56 ___ 65","","<",["<", ">", "="],"Tens: 5 < 6. So 56 < 65!"),Q("10 more than 97","97 + 10",107,[98, 100, 107, 110],"97 + 10 = 107!"),Q("Count by 5: 85, 90, 95, ___","",100,[96, 98, 100, 105],"95 + 5 = 100!"),Q("4 + 7 + 6 = ?","find the 10",17,[15, 16, 17, 18],"4 + 6 = 10, 10 + 7 = 17!"),Q("What comes after 119?","",120,[118, 119, 120, 121],"119 + 1 = 120!"),Q("Odd + Odd = ?","5 + 7 = ?","Even",["Odd", "Even"],"5 + 7 = 12 \u2014 Even!"),Q("8 + ___ = 16","",8,[6, 7, 8, 9],"Double! 8 + 8 = 16!"),Q("1 less than 100","",99,[98, 99, 100, 101],"100 \u2212 1 = 99!"),Q("Skip by 10: 50, 60, 70, ___","",80,[75, 78, 80, 90],"70 + 10 = 80!"),Q("Greatest: 49, 94, 44","","94",["44", "49", "94", "99"],"Tens: 4, 9, 4. Nine tens is biggest \u2014 94!"),Q("18 \u2212 9 = ?","",9,[7, 8, 9, 10],"9 + 9 = 18. Half is 9!"),Q("Raj: 7 + 6 more \u2212 3 given away. Net?","7 + 6 \u2212 3",10,[8, 9, 10, 11],"7 + 6 = 13, 13 \u2212 3 = 10!"),Q("Is 77 in the count-by-2 sequence?","2, 4, 6 ...","No \u2014 77 is odd",["Yes", "No \u2014 77 is odd", "Maybe"],"Counting by 2s gives only even numbers. 77 is odd!"),Q("10 less than 115","",105,[104, 105, 110, 114],"115 \u2212 10 = 105!"),Q("Largest odd number less than 20?","",19,[17, 18, 19, 20],"Odd numbers: 17, 19. Largest is 19!")]},
+{day:11,unit:2,topic:"Subtraction Facts Fluency",emoji:"\u2796",desc:"Master all subtraction facts within 20 using think-addition",sections:[{"type": "concept", "tag": "Focus", "title": "Day 11: Subtraction Facts Fluency", "body": "Today you are practicing:\n\n<strong>Subtraction Facts Fluency</strong>\n\nMaster all subtraction facts within 20 using think-addition\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 11 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:12,unit:2,topic:"Fact Families",emoji:"",desc:"Generate all 4 facts; understand inverse operations",sections:[{"type": "concept", "tag": "Focus", "title": "Day 12: Fact Families", "body": "Today you are practicing:\n\n<strong>Fact Families</strong>\n\nGenerate all 4 facts; understand inverse operations\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 12 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:13,unit:2,topic:"Two-Step Word Problems",emoji:"",desc:"Solve two-step add/subtract word problems",sections:[{"type": "concept", "tag": "Focus", "title": "Day 13: Two-Step Word Problems", "body": "Today you are practicing:\n\n<strong>Two-Step Word Problems</strong>\n\nSolve two-step add/subtract word problems\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 13 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:14,unit:2,topic:"Missing Addends and Equations",emoji:"\u2753",desc:"Find missing numbers; understand the equals sign as balance",sections:[{"type": "concept", "tag": "Focus", "title": "Day 14: Missing Addends and Equations", "body": "Today you are practicing:\n\n<strong>Missing Addends and Equations</strong>\n\nFind missing numbers; understand the equals sign as balance\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 14 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:15,unit:2,topic:"Properties of Addition",emoji:"",desc:"Commutative, associative, and identity properties",sections:[{"type": "concept", "tag": "Focus", "title": "Day 15: Properties of Addition", "body": "Today you are practicing:\n\n<strong>Properties of Addition</strong>\n\nCommutative, associative, and identity properties\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 15 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:16,unit:2,topic:"Adding Multiples of 10",emoji:"",desc:"Add multiples of 10 mentally; understand decade patterns",sections:[{"type": "concept", "tag": "Focus", "title": "Day 16: Adding Multiples of 10", "body": "Today you are practicing:\n\n<strong>Adding Multiples of 10</strong>\n\nAdd multiples of 10 mentally; understand decade patterns\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 16 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:17,unit:2,topic:"Number Line Addition",emoji:"",desc:"Use number lines for two-digit addition; count-on strategy",sections:[{"type": "concept", "tag": "Focus", "title": "Day 17: Number Line Addition", "body": "Today you are practicing:\n\n<strong>Number Line Addition</strong>\n\nUse number lines for two-digit addition; count-on strategy\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 17 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:18,unit:2,topic:"Subtracting Two-Digit Numbers",emoji:"\u2796",desc:"Subtract with and without regrouping; check with addition",sections:[{"type": "concept", "tag": "Focus", "title": "Day 18: Subtracting Two-Digit Numbers", "body": "Today you are practicing:\n\n<strong>Subtracting Two-Digit Numbers</strong>\n\nSubtract with and without regrouping; check with addition\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 18 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:19,unit:2,topic:"Subtraction Strategies Mix",emoji:"",desc:"Apply count-back, count-up, think-addition, and number line",sections:[{"type": "concept", "tag": "Focus", "title": "Day 19: Subtraction Strategies Mix", "body": "Today you are practicing:\n\n<strong>Subtraction Strategies Mix</strong>\n\nApply count-back, count-up, think-addition, and number line\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 19 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:20,unit:2,topic:"Unit 2 Review \u2014 Operations",emoji:"",desc:"Comprehensive review of addition and subtraction",sections:[{"type": "concept", "tag": "Focus", "title": "Day 20: Unit 2 Review — Operations", "body": "Today you are practicing:\n\n<strong>Unit 2 Review — Operations</strong>\n\nComprehensive review of addition and subtraction\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 20 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:21,unit:3,topic:"Place Value to 120",emoji:"\ufe0f",desc:"Standard, expanded, and word forms; value of each digit",sections:[{"type": "concept", "tag": "Focus", "title": "Day 21: Place Value to 120", "body": "Today you are practicing:\n\n<strong>Place Value to 120</strong>\n\nStandard, expanded, and word forms; value of each digit\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 21 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:22,unit:3,topic:"Comparing and Ordering to 120",emoji:"\u2696\ufe0f",desc:"Order 3+ numbers; use number line to compare",sections:[{"type": "concept", "tag": "Focus", "title": "Day 22: Comparing and Ordering to 120", "body": "Today you are practicing:\n\n<strong>Comparing and Ordering to 120</strong>\n\nOrder 3+ numbers; use number line to compare\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 22 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:23,unit:3,topic:"Flexible Place Value",emoji:"",desc:"Trade tens for ones; understand multiple representations",sections:[{"type": "concept", "tag": "Focus", "title": "Day 23: Flexible Place Value", "body": "Today you are practicing:\n\n<strong>Flexible Place Value</strong>\n\nTrade tens for ones; understand multiple representations\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 23 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:24,unit:3,topic:"Expressions with < > =",emoji:"",desc:"Evaluate both sides before comparing",sections:[{"type": "concept", "tag": "Focus", "title": "Day 24: Expressions with < > =", "body": "Today you are practicing:\n\n<strong>Expressions with < > =</strong>\n\nEvaluate both sides before comparing\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 24 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:25,unit:3,topic:"Subtracting Multiples of 10",emoji:"\u2796",desc:"Mentally subtract multiples of 10; understand patterns",sections:[{"type": "concept", "tag": "Focus", "title": "Day 25: Subtracting Multiples of 10", "body": "Today you are practicing:\n\n<strong>Subtracting Multiples of 10</strong>\n\nMentally subtract multiples of 10; understand patterns\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 25 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:26,unit:3,topic:"Two-Digit Subtraction with Regrouping",emoji:"",desc:"Borrow from tens; check answer with addition",sections:[{"type": "concept", "tag": "Focus", "title": "Day 26: Two-Digit Subtraction with Regrouping", "body": "Today you are practicing:\n\n<strong>Two-Digit Subtraction with Regrouping</strong>\n\nBorrow from tens; check answer with addition\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 26 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:27,unit:3,topic:"Hundreds Chart Patterns",emoji:"",desc:"Identify patterns; use chart to add and subtract",sections:[{"type": "concept", "tag": "Focus", "title": "Day 27: Hundreds Chart Patterns", "body": "Today you are practicing:\n\n<strong>Hundreds Chart Patterns</strong>\n\nIdentify patterns; use chart to add and subtract\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 27 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:28,unit:3,topic:"Mixed Operations Challenge",emoji:"",desc:"Choose the best strategy for each problem",sections:[{"type": "concept", "tag": "Focus", "title": "Day 28: Mixed Operations Challenge", "body": "Today you are practicing:\n\n<strong>Mixed Operations Challenge</strong>\n\nChoose the best strategy for each problem\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 28 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:29,unit:3,topic:"Subtraction Word Problems",emoji:"",desc:"Apply subtraction strategies to real-world contexts",sections:[{"type": "concept", "tag": "Focus", "title": "Day 29: Subtraction Word Problems", "body": "Today you are practicing:\n\n<strong>Subtraction Word Problems</strong>\n\nApply subtraction strategies to real-world contexts\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 29 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:30,unit:3,topic:"Units 3-4 Review \u2014 Master Level",emoji:"",desc:"Review place value, comparison, and both operations",sections:[{"type": "concept", "tag": "Focus", "title": "Day 30: Units 3-4 Review — Master Level", "body": "Today you are practicing:\n\n<strong>Units 3-4 Review — Master Level</strong>\n\nReview place value, comparison, and both operations\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 30 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:31,unit:4,topic:"2D Shapes and Attributes",emoji:"",desc:"Classify shapes by sides and angles; compare quadrilaterals",sections:[{"type": "concept", "tag": "Focus", "title": "Day 31: 2D Shapes and Attributes", "body": "Today you are practicing:\n\n<strong>2D Shapes and Attributes</strong>\n\nClassify shapes by sides and angles; compare quadrilaterals\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 31 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:32,unit:4,topic:"3D Shapes \u2014 Faces, Edges, Vertices",emoji:"",desc:"Count attributes; match to real-world objects",sections:[{"type": "concept", "tag": "Focus", "title": "Day 32: 3D Shapes — Faces, Edges, Vertices", "body": "Today you are practicing:\n\n<strong>3D Shapes — Faces, Edges, Vertices</strong>\n\nCount attributes; match to real-world objects\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 32 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:33,unit:4,topic:"Composing and Decomposing Shapes",emoji:"",desc:"Build new shapes from parts; find lines of symmetry",sections:[{"type": "concept", "tag": "Focus", "title": "Day 33: Composing and Decomposing Shapes", "body": "Today you are practicing:\n\n<strong>Composing and Decomposing Shapes</strong>\n\nBuild new shapes from parts; find lines of symmetry\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 33 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:34,unit:4,topic:"Introduction to Fractions",emoji:"\u00bd",desc:"Understand halves, thirds, fourths as equal parts",sections:[{"type": "concept", "tag": "Focus", "title": "Day 34: Introduction to Fractions", "body": "Today you are practicing:\n\n<strong>Introduction to Fractions</strong>\n\nUnderstand halves, thirds, fourths as equal parts\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 34 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:35,unit:4,topic:"Fractions of Sets",emoji:"",desc:"Find fractions of groups; connect to division",sections:[{"type": "concept", "tag": "Focus", "title": "Day 35: Fractions of Sets", "body": "Today you are practicing:\n\n<strong>Fractions of Sets</strong>\n\nFind fractions of groups; connect to division\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 35 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:36,unit:4,topic:"Fractions on a Number Line",emoji:"",desc:"Place fractions between 0 and 1; compare fractions",sections:[{"type": "concept", "tag": "Focus", "title": "Day 36: Fractions on a Number Line", "body": "Today you are practicing:\n\n<strong>Fractions on a Number Line</strong>\n\nPlace fractions between 0 and 1; compare fractions\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 36 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:37,unit:4,topic:"Telling Time to the Hour and Half Hour",emoji:"",desc:"Read analog and digital clocks; elapsed time basics",sections:[{"type": "concept", "tag": "Focus", "title": "Day 37: Telling Time to the Hour and Half Hour", "body": "Today you are practicing:\n\n<strong>Telling Time to the Hour and Half Hour</strong>\n\nRead analog and digital clocks; elapsed time basics\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 37 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:38,unit:4,topic:"Measurement \u2014 Length",emoji:"",desc:"Measure with inches and centimeters; compare lengths",sections:[{"type": "concept", "tag": "Focus", "title": "Day 38: Measurement — Length", "body": "Today you are practicing:\n\n<strong>Measurement — Length</strong>\n\nMeasure with inches and centimeters; compare lengths\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 38 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:39,unit:4,topic:"Measurement \u2014 Weight and Capacity",emoji:"\u2696\ufe0f",desc:"Compare weight and capacity; use standard units",sections:[{"type": "concept", "tag": "Focus", "title": "Day 39: Measurement — Weight and Capacity", "body": "Today you are practicing:\n\n<strong>Measurement — Weight and Capacity</strong>\n\nCompare weight and capacity; use standard units\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 39 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:40,unit:4,topic:"Unit 5 Review \u2014 Geometry and Fractions",emoji:"",desc:"Review shapes, fractions, time, and measurement",sections:[{"type": "concept", "tag": "Focus", "title": "Day 40: Unit 5 Review — Geometry and Fractions", "body": "Today you are practicing:\n\n<strong>Unit 5 Review — Geometry and Fractions</strong>\n\nReview shapes, fractions, time, and measurement\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 40 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:41,unit:5,topic:"Mixed Addition and Subtraction",emoji:"",desc:"Apply all strategies to mixed problems",sections:[{"type": "concept", "tag": "Focus", "title": "Day 41: Mixed Addition and Subtraction", "body": "Today you are practicing:\n\n<strong>Mixed Addition and Subtraction</strong>\n\nApply all strategies to mixed problems\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 41 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:42,unit:5,topic:"Advanced Word Problems",emoji:"",desc:"Multi-step and comparison word problems",sections:[{"type": "concept", "tag": "Focus", "title": "Day 42: Advanced Word Problems", "body": "Today you are practicing:\n\n<strong>Advanced Word Problems</strong>\n\nMulti-step and comparison word problems\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 42 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:43,unit:5,topic:"Place Value Applications",emoji:"\ufe0f",desc:"Use place value to solve complex problems",sections:[{"type": "concept", "tag": "Focus", "title": "Day 43: Place Value Applications", "body": "Today you are practicing:\n\n<strong>Place Value Applications</strong>\n\nUse place value to solve complex problems\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 43 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:44,unit:5,topic:"Geometry in Real Life",emoji:"",desc:"Identify shapes and attributes in the real world",sections:[{"type": "concept", "tag": "Focus", "title": "Day 44: Geometry in Real Life", "body": "Today you are practicing:\n\n<strong>Geometry in Real Life</strong>\n\nIdentify shapes and attributes in the real world\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 44 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:45,unit:5,topic:"Fractions Advanced",emoji:"\u00bd",desc:"Compare fractions; find equivalent fractions",sections:[{"type": "concept", "tag": "Focus", "title": "Day 45: Fractions Advanced", "body": "Today you are practicing:\n\n<strong>Fractions Advanced</strong>\n\nCompare fractions; find equivalent fractions\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 45 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:46,unit:5,topic:"Time and Measurement Mix",emoji:"\u23f0",desc:"Solve elapsed time and measurement problems",sections:[{"type": "concept", "tag": "Focus", "title": "Day 46: Time and Measurement Mix", "body": "Today you are practicing:\n\n<strong>Time and Measurement Mix</strong>\n\nSolve elapsed time and measurement problems\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 46 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:47,unit:5,topic:"Data and Graphs",emoji:"",desc:"Read and interpret bar graphs and picture graphs",sections:[{"type": "concept", "tag": "Focus", "title": "Day 47: Data and Graphs", "body": "Today you are practicing:\n\n<strong>Data and Graphs</strong>\n\nRead and interpret bar graphs and picture graphs\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 47 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:48,unit:5,topic:"Pattern Problems",emoji:"",desc:"Identify, extend, and create number patterns",sections:[{"type": "concept", "tag": "Focus", "title": "Day 48: Pattern Problems", "body": "Today you are practicing:\n\n<strong>Pattern Problems</strong>\n\nIdentify, extend, and create number patterns\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 48 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:49,unit:5,topic:"Two-Step Operations",emoji:"",desc:"Solve two-step problems with all operations",sections:[{"type": "concept", "tag": "Focus", "title": "Day 49: Two-Step Operations", "body": "Today you are practicing:\n\n<strong>Two-Step Operations</strong>\n\nSolve two-step problems with all operations\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 49 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:50,unit:5,topic:"Unit 5 Challenge",emoji:"",desc:"Advanced mixed challenge \u2014 Unit 5",sections:[{"type": "concept", "tag": "Focus", "title": "Day 50: Unit 5 Challenge", "body": "Today you are practicing:\n\n<strong>Unit 5 Challenge</strong>\n\nAdvanced mixed challenge — Unit 5\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 50 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:51,unit:6,topic:"Measurement Applications",emoji:"",desc:"Apply length, weight, and capacity in context",sections:[{"type": "concept", "tag": "Focus", "title": "Day 51: Measurement Applications", "body": "Today you are practicing:\n\n<strong>Measurement Applications</strong>\n\nApply length, weight, and capacity in context\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 51 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:52,unit:6,topic:"Data Collection and Analysis",emoji:"",desc:"Collect, organize, and interpret data",sections:[{"type": "concept", "tag": "Focus", "title": "Day 52: Data Collection and Analysis", "body": "Today you are practicing:\n\n<strong>Data Collection and Analysis</strong>\n\nCollect, organize, and interpret data\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 52 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:53,unit:6,topic:"Time Problem Solving",emoji:"\u23f0",desc:"Solve elapsed time and schedule problems",sections:[{"type": "concept", "tag": "Focus", "title": "Day 53: Time Problem Solving", "body": "Today you are practicing:\n\n<strong>Time Problem Solving</strong>\n\nSolve elapsed time and schedule problems\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 53 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:54,unit:6,topic:"Money and Coins",emoji:"",desc:"Count coins; make change; solve money problems",sections:[{"type": "concept", "tag": "Focus", "title": "Day 54: Money and Coins", "body": "Today you are practicing:\n\n<strong>Money and Coins</strong>\n\nCount coins; make change; solve money problems\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 54 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:55,unit:6,topic:"Multi-Step Mixed Problems",emoji:"",desc:"Complex two-step problems \u2014 all operations",sections:[{"type": "concept", "tag": "Focus", "title": "Day 55: Multi-Step Mixed Problems", "body": "Today you are practicing:\n\n<strong>Multi-Step Mixed Problems</strong>\n\nComplex two-step problems — all operations\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 55 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:56,unit:6,topic:"Geometry Challenge",emoji:"",desc:"Advanced shape problems; symmetry and area",sections:[{"type": "concept", "tag": "Focus", "title": "Day 56: Geometry Challenge", "body": "Today you are practicing:\n\n<strong>Geometry Challenge</strong>\n\nAdvanced shape problems; symmetry and area\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 56 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:57,unit:6,topic:"Fraction Applications",emoji:"\u00bd",desc:"Real-world fraction problems",sections:[{"type": "concept", "tag": "Focus", "title": "Day 57: Fraction Applications", "body": "Today you are practicing:\n\n<strong>Fraction Applications</strong>\n\nReal-world fraction problems\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 57 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:58,unit:6,topic:"Number Sense Mastery",emoji:"",desc:"Demonstrate mastery of numbers to 120",sections:[{"type": "concept", "tag": "Focus", "title": "Day 58: Number Sense Mastery", "body": "Today you are practicing:\n\n<strong>Number Sense Mastery</strong>\n\nDemonstrate mastery of numbers to 120\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 58 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:59,unit:6,topic:"Operations Grand Review",emoji:"\u2795",desc:"Final review of all addition and subtraction",sections:[{"type": "concept", "tag": "Focus", "title": "Day 59: Operations Grand Review", "body": "Today you are practicing:\n\n<strong>Operations Grand Review</strong>\n\nFinal review of all addition and subtraction\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 59 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]},
+{day:60,unit:6,topic:"Grand Finale \u2014 60-Day Champion!",emoji:"",desc:"Master test \u2014 all 60-day concepts",sections:[{"type": "concept", "tag": "Focus", "title": "Day 60: Grand Finale — 60-Day Champion!", "body": "Today you are practicing:\n\n<strong>Grand Finale — 60-Day Champion!</strong>\n\nMaster test — all 60-day concepts\n\nRemember your strategies:\n• Read the problem carefully\n• Choose the best method\n• Show your steps\n• Check your answer!"}, {"type": "strategy", "tag": "Strategy", "title": "Problem-Solving Steps", "steps": ["Read the problem or question carefully", "Identify what numbers and operation are needed", "Choose your best strategy", "Solve step by step", "Check: does the answer make sense?"]}, {"type": "facts", "tag": "Key Facts", "title": "Facts to Know", "facts": ["9+8=17", "17−9=8", "8+8=16", "16−8=8", "47+36=83", "83−47=36", "1/2 of 12=6", "1/4 of 20=5"], "keys": [0, 2, 4, 6]}],quiz:[Q("9 + 8 = ?","",17,[15, 16, 17, 18],"9 + 1 = 10, 10 + 7 = 17!"),Q("17 \u2212 9 = ?","",8,[6, 7, 8, 9],"9 + 8 = 17, so 17 \u2212 9 = 8!"),Q("47 + 36 = ?","",83,[81, 82, 83, 84],"7+6=13, carry 1. Tens: 4+3+1=8. Answer: 83!"),Q("83 \u2212 47 = ?","",36,[34, 35, 36, 37],"Borrow: 13\u22127=6. Tens: 7\u22124=3. Answer: 36!"),Q("Is 58 odd or even?","58","Even",["Odd", "Even"],"58 ends in 8 \u2014 EVEN!"),Q("Compare: 67 ___ 76","","<",["<", ">", "="],"Tens: 6 < 7. So 67 < 76!"),Q("10 more than 89","89 + 10",99,[90, 95, 98, 99],"89 + 10 = 99!"),Q("3 + 7 + 8 = ?","find the 10 pair",18,[16, 17, 18, 19],"3 + 7 = 10, 10 + 8 = 18!"),Q("Missing: 8 + ___ = 16","",8,[6, 7, 8, 9],"8 + 8 = 16. Missing is 8!"),Q("1/2 of 12 = ?","",6,[4, 5, 6, 8],"12 \u00f7 2 = 6!"),Q("Raj: 34 + Mia: 48 = total?","34 + 48",82,[78, 80, 82, 84],"4+8=12, carry 1. Tens: 3+4+1=8. Answer: 82!"),Q("65 \u2212 28 = ?","",37,[35, 36, 37, 38],"Borrow: 15\u22128=7. Tens: 5\u22122=3. Answer: 37!"),Q("True: 7 + 8 = 8 + 7?","","True",["True", "False"],"Commutative property! Both = 15!"),Q("Fact family: 9+8=17. So 17 \u2212 8 = ?","",9,[7, 8, 9, 10],"17 \u2212 8 = 9. Fact family!"),Q("Count by 5: 75, 80, 85, ___","",90,[86, 88, 90, 95],"85 + 5 = 90!"),Q("56 + 37 = ?","",93,[89, 91, 93, 95],"6+7=13, carry 1. Tens: 5+3+1=9. Answer: 93!"),Q("2/4 is equal to?","","1/2",["1/4", "1/3", "1/2", "2/3"],"2/4 = 1/2. Equivalent fractions!"),Q("Day 60 challenge: 67 + 25 = ?","",92,[88, 90, 92, 94],"7+5=12, carry 1. Tens: 6+2+1=9. Answer: 92!")]}
+];
+
+//  APP LOGIC 
+
+// State
+let state = {
+  currentDay: 1, selectedDay: 1, selectedUnit: 1,
+  completedDays: [], totalStars: 0, perfectDays: 0,
+  bestStreak: 0, currentStreak: 0,
+  quizAnswers: [], quizScore: 0, currentQIdx: 0,
+};
+
+let soundOn = true, voiceOn = true;
+let audioCtx = null;
+
+//  SOUND 
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function tone(freq, dur, vol) {
+  try {
+    var ctx = getAudio(), o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = freq; g.gain.value = vol || 0.22;
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    o.start(); o.stop(ctx.currentTime + dur);
+  } catch(e) {}
+}
+function playSound(type) {
+  if (!soundOn) return;
+  if (type === 'correct') { tone(523,.1); setTimeout(()=>tone(659,.1),90); setTimeout(()=>tone(784,.18),180); }
+  else if (type === 'wrong')  { tone(220,.14,.12); setTimeout(()=>tone(196,.18,.1),120); }
+  else if (type === 'perfect'){ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.22),i*110)); }
+  else if (type === 'star')   { [784,880,988,1047].forEach((f,i)=>setTimeout(()=>tone(f,.15),i*75)); }
+}
+function speak(text) {
+  if (!voiceOn || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.88; u.pitch = 1.08; u.volume = 1;
+  var voices = window.speechSynthesis.getVoices();
+  var v = voices.find(x=>x.name.includes('Samantha')||x.name.includes('Karen')||
+    x.name.includes('Google US')||x.name.includes('Zira')||(x.lang==='en-US'&&x.localService))
+    || voices.find(x=>x.lang&&x.lang.startsWith('en'));
+  if (v) u.voice = v;
+  window.speechSynthesis.speak(u);
+}
+function toggleSound() {
+  soundOn = !soundOn; voiceOn = !voiceOn;
+  document.getElementById('sndBtn').textContent = soundOn ? ' ON' : ' OFF';
+  if (!soundOn && window.speechSynthesis) window.speechSynthesis.cancel();
+}
+
+//  PERSIST 
+function save() { try { localStorage.setItem('rg1quest', JSON.stringify(state)); } catch(e) {} }
+function load() {
+  try { var s=localStorage.getItem('rg1quest'); if(s) state=Object.assign(state,JSON.parse(s)); } catch(e) {}
+}
+
+//  LEVELS 
+function getLevel(stars) {
+  var levels = [
+    {min:0,  name:'Rookie',         color:'#64748B'},
+    {min:10, name:'Explorer',       color:'#3B82F6'},
+    {min:25, name:'Thinker',        color:'#8B5CF6'},
+    {min:50, name:'Problem Solver', color:'#10B981'},
+    {min:80, name:'Math Wizard',    color:'#F59E0B'},
+    {min:120,name:'Champion',       color:'#EF4444'},
+    {min:160,name:'Math Superstar', color:'#EC4899'},
+  ];
+  var lv = levels[0];
+  levels.forEach(l => { if (stars >= l.min) lv = l; });
+  return lv;
+}
+function starsForScore(correct, total) {
+  var pct = correct / total;
+  return pct >= 0.85 ? 3 : pct >= 0.65 ? 2 : 1;
+}
+
+//  NAVIGATION 
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+}
+function goHome() { renderHome(); showScreen('home'); }
+
+//  HOME 
+function renderHome() {
+  var lv = getLevel(state.totalStars);
+  document.getElementById('starsEl').textContent = state.totalStars;
+  document.getElementById('levelEl').textContent = lv.name;
+
+  var d = state.currentDay;
+  var lesson = CURRICULUM[Math.min(d-1, CURRICULUM.length-1)];
+  document.getElementById('todayTag').textContent = 'Day '+d+': '+lesson.emoji+' '+lesson.topic;
+  document.getElementById('todayDesc').textContent = lesson.desc;
+
+  var pct = Math.round((state.completedDays.length / 60) * 100);
+  document.getElementById('progDay').textContent = d;
+  document.getElementById('progPct').textContent = pct+'%';
+  document.getElementById('progBar').style.width = pct+'%';
+  document.getElementById('sStars').textContent = state.totalStars;
+  document.getElementById('sDays').textContent = state.completedDays.length;
+  document.getElementById('sPerfect').textContent = state.perfectDays;
+  document.getElementById('sStreak').textContent = state.bestStreak;
+
+  renderUnitTabs();
+  renderDayGrid();
+}
+
+function renderUnitTabs() {
+  var el = document.getElementById('unitTabs');
+  el.innerHTML = '';
+  UNITS.forEach(u => {
+    var btn = document.createElement('button');
+    btn.className = 'unit-tab' + (u.id === state.selectedUnit ? ' active' : '');
+    btn.textContent = 'Unit '+u.id;
+    btn.title = u.name;
+    btn.onclick = function() { state.selectedUnit = u.id; renderUnitTabs(); renderDayGrid(); };
+    el.appendChild(btn);
+  });
+}
+
+function renderDayGrid() {
+  var grid = document.getElementById('dayGrid');
+  grid.innerHTML = '';
+  var unit = UNITS.find(u => u.id === state.selectedUnit);
+  if (!unit) return;
+  unit.days.forEach(d => {
+    var btn = document.createElement('button');
+    var done = state.completedDays.includes(d);
+    var cur  = d === state.currentDay;
+    var avail= d <= state.currentDay;
+    btn.className = 'day-btn ' + (done?'done': cur?'current': avail?'avail':'locked');
+    btn.textContent = d;
+    btn.title = (CURRICULUM[d-1]||{}).topic || '';
+    if (avail) btn.onclick = function() { state.selectedDay = d; renderHome(); };
+    grid.appendChild(btn);
+  });
+}
+
+//  LESSON 
+function startLesson() {
+  var d = state.selectedDay || state.currentDay;
+  var lesson = CURRICULUM[d-1];
+  if (!lesson) return;
+  document.getElementById('lDayEl').textContent = d;
+  document.getElementById('lTitleEl').textContent = lesson.emoji + ' ' + lesson.topic;
+  document.getElementById('lMetaEl').textContent = 'Unit '+lesson.unit+'  NJ Grade 1 Advanced';
+
+  var body = document.getElementById('lessonBody');
+  body.innerHTML = '';
+  (lesson.sections||[]).forEach(function(sec, i) {
+    var card = document.createElement('div');
+    card.className = 'l-card';
+    card.style.animationDelay = (i*0.12)+'s';
+
+    var tagCls = sec.type==='strategy' ? 'tag-s' : sec.type==='facts' ? 'tag-f' : 'tag-c';
+    var h3 = '<h3><span class="l-tag '+tagCls+'">'+sec.tag+'</span> '+sec.title+'</h3>';
+
+    if (sec.type === 'concept') {
+      card.innerHTML = h3 + '<div class="concept-box">'+sec.body.replace(/\n/g,'<br>')+'</div>';
+    } else if (sec.type === 'strategy') {
+      var steps = (sec.steps||[]).map(function(s,j){
+        return '<div class="strat-step"><div class="step-num">'+(j+1)+'</div><div class="step-txt">'+s+'</div></div>';
+      }).join('');
+      card.innerHTML = h3 + '<div class="strat-box"><div class="strat-title">Follow these steps:</div>'+steps+'</div>';
+    } else if (sec.type === 'facts') {
+      var cells = (sec.facts||[]).map(function(f,j){
+        var isKey = (sec.keys||[]).includes(j);
+        return '<div class="fact-cell'+(isKey?' key':'')+'">'+f+'</div>';
+      }).join('');
+      card.innerHTML = h3 + '<div class="fact-grid">'+cells+'</div>';
+    }
+    body.appendChild(card);
+  });
+  showScreen('lesson');
+}
+
+function finishLesson() {
+  document.getElementById('lessonBody').innerHTML += '<div class="l-card" style="text-align:center;background:linear-gradient(135deg,#ECFDF5,#D1FAE5);"><div style="font-size:2rem"></div><div style="font-weight:800;color:#065F46;font-size:1.05rem;margin:5px 0;">Lesson Done!</div><div style="color:#555;font-weight:600;font-size:.88rem;">Now take the quiz to earn your stars!</div></div>';
+  document.getElementById('lessonBody').scrollTop = 9999;
+  var footer = document.getElementById('screen-lesson').querySelector('.btn-row');
+  footer.innerHTML = '<button class="btn btn-mint" onclick="startQuiz()">Take the Quiz now!</button><button class="btn btn-gray" onclick="goHome()">Home</button>';
+}
+
+//  QUIZ 
+function startQuiz() {
+  var d = state.selectedDay || state.currentDay;
+  var lesson = CURRICULUM[d-1];
+  if (!lesson) return;
+  state.quizAnswers = []; state.quizScore = 0; state.currentQIdx = 0;
+
+  document.getElementById('qDayEl').textContent = d;
+  document.getElementById('qTitleEl').textContent = lesson.emoji + ' ' + lesson.topic;
+
+  renderProgressDots(lesson.quiz.length);
+  updateLiveScore(lesson.quiz.length);
+  renderQuestion(lesson, 0);
+  showScreen('quiz');
+}
+
+function renderProgressDots(total) {
+  var el = document.getElementById('progTrack');
+  el.innerHTML = '';
+  for (var i=0; i<total; i++) {
+    var d = document.createElement('div');
+    d.className = 'pt' + (i===0?' cur':'');
+    d.id = 'pt'+i;
+    el.appendChild(d);
+  }
+}
+
+function updateProgressDots(cur, total) {
+  for (var i=0; i<total; i++) {
+    var d = document.getElementById('pt'+i);
+    if (!d) continue;
+    if (i < cur) {
+      var wasRight = state.quizAnswers[i] && state.quizAnswers[i].ok;
+      d.className = 'pt ' + (wasRight ? 'c' : 'w');
+    } else if (i === cur) { d.className = 'pt cur'; }
+    else { d.className = 'pt'; }
+  }
+}
+
+function updateLiveScore(total) {
+  var correct = state.quizAnswers.filter(a=>a.ok).length;
+  var missed  = state.quizAnswers.filter(a=>!a.ok).length;
+  document.getElementById('liveC').textContent = correct;
+  document.getElementById('liveW').textContent = missed;
+  document.getElementById('liveT').textContent = total;
+}
+
+function renderQuestion(lesson, idx) {
+  var q = lesson.quiz[idx];
+  var total = lesson.quiz.length;
+  var isLast = idx === total - 1;
+
+  // Build choices  handle both string and number answers
+  var choicesHtml = q.c.map(function(choice) {
+    var val = String(choice);
+    var safe = val.replace(/"/g,'&quot;');
+    var valEsc = val.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    var ansEsc = String(q.a).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return '<button class="choice" onclick="checkAnswer(this,\''+valEsc+'\',\''+ansEsc+'\','+idx+','+total+')">'+val+'</button>';
+  }).join('');
+
+  var html = '<div class="q-card">'
+    + '<div class="q-num">Question '+(idx+1)+' of '+total+'</div>'
+    + '<div class="q-text">'+q.q+'</div>'
+    + (q.v ? '<div class="q-vis">'+q.v+'</div>' : '')
+    + '</div>'
+    + '<div class="choices">'+choicesHtml+'</div>'
+    + '<div class="feedback" id="fb"></div>'
+    + '<div class="next-wrap" id="nxt">'
+    + '<button class="btn btn-sky" onclick="advance('+idx+','+total+')">'
+    + (isLast ? 'See My Results!' : 'Next Question ')+'</button></div>';
+
+  document.getElementById('qArea').innerHTML = html;
+}
+
+function checkAnswer(btn, chosen, correct, idx, total) {
+  document.querySelectorAll('.choice').forEach(b=>b.disabled=true);
+  var lesson = CURRICULUM[(state.selectedDay||state.currentDay)-1];
+  var isOk = chosen === correct;
+  state.quizAnswers.push({idx, chosen, correct, ok: isOk});
+
+  if (isOk) {
+    btn.classList.add('c-right');
+    state.quizScore++;
+    playSound('correct');
+    var msgs = ['Awesome!','Correct!','Yes!','Brilliant!','Perfect!','Super!','Nice work!','Great job!'];
+    document.getElementById('fb').innerHTML = '<div class="fb-title"> '+msgs[Math.floor(Math.random()*msgs.length)]+'</div>';
+    document.getElementById('fb').className = 'feedback show fb-ok';
+
+    // Check for streak encouragement
+    var streak = 0;
+    for (var i=state.quizAnswers.length-1; i>=0; i--) { if(state.quizAnswers[i].ok) streak++; else break; }
+    if (streak===3) setTimeout(()=>speak('Three in a row! Keep going Rajveer!'), 900);
+    else if (streak===5) setTimeout(()=>speak('Five correct in a row! You are on fire!'), 900);
+    else if (streak===8) setTimeout(()=>speak('Eight in a row! Incredible!'), 900);
+
+    // Auto-advance after 900ms on correct
+    setTimeout(function() { advance(idx, total); }, 900);
+  } else {
+    btn.classList.add('c-wrong');
+    playSound('wrong');
+    // Highlight correct answer
+    document.querySelectorAll('.choice').forEach(function(b) {
+      if (b.textContent.trim() === correct) b.classList.add('c-right');
+    });
+    var hint = (lesson.quiz[idx]||{}).h || 'The correct answer is shown in green above. Study it before moving on!';
+    document.getElementById('fb').innerHTML =
+      '<div class="fb-title"> Not quite  let\'s learn!</div>'
+      +'<div class="fb-body"> '+hint+'<br><br>'
+      +'<span style="font-size:.82rem;color:#7C3AED;font-weight:700;"> See the green button above  that is the correct answer.</span></div>';
+    document.getElementById('fb').className = 'feedback show fb-no';
+    // Show Next button  Rajveer controls when to move on
+    document.getElementById('nxt').className = 'next-wrap show';
+  }
+
+  updateLiveScore(total);
+  updateProgressDots(idx+1, total);
+}
+
+function advance(idx, total) {
+  var next = idx + 1;
+  if (next < total) {
+    var lesson = CURRICULUM[(state.selectedDay||state.currentDay)-1];
+    updateProgressDots(next, total);
+    renderQuestion(lesson, next);
+  } else {
+    showResults();
+  }
+}
+
+//  RESULTS 
+function showResults() {
+  var d = state.selectedDay || state.currentDay;
+  var lesson = CURRICULUM[d-1];
+  var total   = lesson.quiz.length;
+  var correct = state.quizScore;
+  var stars   = starsForScore(correct, total);
+  var pct     = Math.round(correct/total*100);
+
+  // Award stars
+  state.totalStars += stars;
+  if (stars === 3) state.perfectDays++;
+  if (!state.completedDays.includes(d)) {
+    state.completedDays.push(d);
+    state.currentStreak++;
+    if (state.currentStreak > state.bestStreak) state.bestStreak = state.currentStreak;
+    if (d === state.currentDay && d < 60) state.currentDay = d + 1;
+  } else {
+    state.currentStreak = 0;
+  }
+  save();
+
+  var lv = getLevel(state.totalStars);
+  var trophy = stars===3 ? '' : stars===2 ? '' : '';
+  var titles = {1:'Good effort, Rajveer!', 2:'Well done, Rajveer!', 3:'Outstanding, Rajveer!'};
+  var subs   = {1:'Every mistake is a chance to learn!', 2:'Great work today!', 3:'You nailed every question!'};
+
+  var starsHtml = [1,2,3].map(i=>'<div class="star-i">'+(i<=stars?'':'')+'</div>').join('');
+  var isGrad = d===60;
+
+  var html = '<div class="ach-trophy">'+trophy+'</div>'
+    +'<div class="ach-title">'+titles[stars]+'</div>'
+    +'<div class="ach-sub">'+subs[stars]+'</div>'
+    +'<div class="stars-row">'+starsHtml+'</div>'
+    +'<div class="lv-pill" style="background:'+lv.color+'">'+lv.name+'</div>'
+    +'<div class="score-cards">'
+    +'<div class="sc"><div class="sc-num" style="color:#10B981">'+correct+'</div><div class="sc-lbl">Correct</div></div>'
+    +'<div class="sc"><div class="sc-num" style="color:#EF4444">'+(total-correct)+'</div><div class="sc-lbl">Missed</div></div>'
+    +'<div class="sc"><div class="sc-num" style="color:#F59E0B">'+stars+'</div><div class="sc-lbl">Stars Earned</div></div>'
+    +'<div class="sc"><div class="sc-num" style="color:#8B5CF6">'+state.totalStars+'</div><div class="sc-lbl">Total Stars</div></div>'
+    +'</div>'
+    +(isGrad?'<div class="ach-msg" style="background:linear-gradient(135deg,#FFF7ED,#FFFDE7);text-align:center;font-size:1rem;font-weight:800;color:#92400E;"> YOU COMPLETED ALL 60 DAYS! You are a Grade 1 Math Champion! </div>':'')
+    +'<div style="margin-top:8px;font-size:.82rem;color:var(--muted);font-weight:700;">Day '+d+' of 60 done  &nbsp;|&nbsp; '+state.completedDays.length+' days complete</div>'
+    +'<div class="btn-row" style="justify-content:center;margin-top:14px;">'
+    +'<button class="btn btn-sky" onclick="goHome()">Home</button>'
+    +(d<60?'<button class="btn btn-mint" onclick="state.selectedDay='+(d+1)+';startLesson()">Next Day </button>':'')
+    +'</div>';
+
+  document.getElementById('achContent').innerHTML = html;
+  showScreen('ach');
+
+  if (stars >= 2) launchConfetti();
+
+  // Voice celebration
+  setTimeout(function() {
+    if (correct === total) {
+      playSound('perfect');
+      setTimeout(()=>speak('Congratulations Rajveer! You got every single answer correct! You are a math superstar! Amazing work!'), 600);
+    } else if (stars === 2) {
+      playSound('star');
+      setTimeout(()=>speak('Well done Rajveer! Great quiz today! Keep practicing!'), 500);
+    } else {
+      playSound('star');
+      setTimeout(()=>speak('Good effort Rajveer! Every mistake helps you learn. You can do it!'), 500);
+    }
+  }, 300);
+}
+
+//  CONFETTI 
+function launchConfetti() {
+  var wrap = document.getElementById('confettiLayer');
+  wrap.innerHTML = '';
+  var colors = ['#F59E0B','#EF4444','#3B82F6','#10B981','#8B5CF6','#EC4899'];
+  for (var i=0; i<55; i++) {
+    var p = document.createElement('div');
+    p.className = 'cp';
+    p.style.cssText = 'left:'+Math.random()*100+'%;background:'+colors[Math.floor(Math.random()*colors.length)]
+      +';border-radius:'+(Math.random()>.5?'50%':'2px')
+      +';width:'+(6+Math.random()*8)+'px;height:'+(6+Math.random()*8)+'px'
+      +';animation-duration:'+(1.5+Math.random()*2)+'s;animation-delay:'+(Math.random()*.8)+'s';
+    wrap.appendChild(p);
+  }
+  setTimeout(()=>wrap.innerHTML='', 4500);
+}
+
+//  INIT 
+load();
+// Load voices async
+if (window.speechSynthesis) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); };
+}
+renderHome();
+</script></body></html>
